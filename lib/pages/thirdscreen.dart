@@ -29,8 +29,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
 
       data.forEach((element) {
         (element as Map<String, dynamic>).forEach((key, value) {
-          // var user = Users.fromJson(element);
-          // print(element);
+          Users.fromJson(element);
         });
       });
 
@@ -76,7 +75,6 @@ class _ThirdScreenState extends State<ThirdScreen> {
           } else if (snapshot.hasError) {
             return Text('${snapshot.error}');
           } else {
-            print(snapshot.data);
             return const Center(
               child: CircularProgressIndicator(),
             );

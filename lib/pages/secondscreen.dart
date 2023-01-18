@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:suitmedia_test/pages/thirdscreen.dart';
 
 class SecondScreen extends StatefulWidget {
-  const SecondScreen({super.key});
+  final name;
+  const SecondScreen({super.key, required this.name});
 
   @override
   State<SecondScreen> createState() => _SecondScreenState();
@@ -53,9 +54,9 @@ class _SecondScreenState extends State<SecondScreen> {
                 color: Color(0xff04021D),
               ),
             ),
-            const Text(
-              'John Doe',
-              style: TextStyle(
+            Text(
+              widget.name,
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
                 color: Color(0xff04021D),

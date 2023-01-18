@@ -20,6 +20,8 @@ class _HomePageState extends State<HomePage> {
 
     if (original == reverse) {
       return true;
+    } else if (original != reverse) {
+      return false;
     } else {
       return false;
     }
@@ -123,19 +125,32 @@ class _HomePageState extends State<HomePage> {
               // Check Button
               ElevatedButton(
                 onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: const Text('Is Palindrome?'),
-                          content: Text(
-                            isPalindrome() ? 'True' : 'False',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        );
-                      });
-
-                  // isPalindrome();
+                  if (_palindromeController.text != '') {
+                    // isPalindrome();
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Is Palindrome?'),
+                            content: Text(
+                              isPalindrome() ? 'True' : 'False',
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          );
+                        });
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const AlertDialog(
+                            title: Text('Is Palindrome?'),
+                            content: Text(
+                              'Please input a valid text',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          );
+                        });
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                     elevation: 0,
@@ -161,7 +176,9 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const SecondScreen()));
+                          builder: (context) => SecondScreen(
+                                name: _nameController.text.trim(),
+                              )));
                 },
                 style: ElevatedButton.styleFrom(
                     elevation: 0,
