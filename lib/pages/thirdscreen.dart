@@ -22,8 +22,8 @@ class _ThirdScreenState extends State<ThirdScreen> {
   }
 
   Future<List<Datum>> getUsers() async {
-    final response =
-        await http.get(Uri.parse('https://reqres.in/api/users?page=1'));
+    final response = await http
+        .get(Uri.parse('https://reqres.in/api/users?page=2?per_page=10'));
 
     if (response.statusCode == 200) {
       List<dynamic> body = (jsonDecode(response.body))['data'];
