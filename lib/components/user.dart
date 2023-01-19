@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class User extends StatelessWidget {
+class UserList extends StatelessWidget {
   final String firstName;
   final String lastName;
   final String imageUrl;
   final String email;
 
-  const User({
+  const UserList({
     super.key,
     required this.firstName,
     required this.imageUrl,

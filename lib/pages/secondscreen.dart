@@ -1,15 +1,31 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:suitmedia_test/pages/thirdscreen.dart';
 
 class SecondScreen extends StatefulWidget {
-  final name;
-  const SecondScreen({super.key, required this.name});
+  dynamic name;
+  SecondScreen({super.key, required this.name});
 
   @override
   State<SecondScreen> createState() => _SecondScreenState();
 }
 
 class _SecondScreenState extends State<SecondScreen> {
+  String newName = 'test';
+
+  void updateInformation(String newName) {
+    setState(() => widget.name = newName);
+  }
+
+  void moveToThirdPage() async {
+    final newName = await Navigator.push(
+      context,
+      CupertinoPageRoute(
+          fullscreenDialog: true, builder: (context) => const ThirdScreen()),
+    );
+    updateInformation(newName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,10 +96,7 @@ class _SecondScreenState extends State<SecondScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ThirdScreen()));
+                moveToThirdPage();
               },
               style: ElevatedButton.styleFrom(
                   elevation: 0,

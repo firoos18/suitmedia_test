@@ -1,7 +1,8 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:suitmedia_test/components/user.dart';
 import '../models/user_models.dart';
 
 class ThirdScreen extends StatefulWidget {
@@ -13,29 +14,29 @@ class ThirdScreen extends StatefulWidget {
 
 class _ThirdScreenState extends State<ThirdScreen> {
   late Future<Users> futureUsers;
+  late Users users;
 
   @override
   void initState() {
     super.initState();
-    futureUsers = fetchUsers();
   }
 
-  Future<Users> fetchUsers() async {
-    final response = await http.get(Uri.parse('https://reqres.in/api/users'));
+  Future<List<Datum>> getUsers() async {
+    final response =
+        await http.get(Uri.parse('https://reqres.in/api/users?per_page=20'));
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> myMap = jsonDecode(response.body);
-      List<dynamic> data = myMap['data'];
+      List<dynamic> body = (jsonDecode(response.body))['data'];
 
-      data.forEach((element) {
-        (element as Map<String, dynamic>).forEach((key, value) {
-          Users.fromJson(element);
-        });
-      });
+      List<Datum> users = body
+          .map(
+            (dynamic item) => Datum.fromJson(item),
+          )
+          .toList();
 
-      return Users.fromJson(jsonDecode(response.body)['data'][3]);
+      return users;
     } else {
-      throw Exception('Failed to Load Users');
+      throw "Unable to retrieve posts.";
     }
   }
 
@@ -63,15 +64,36 @@ class _ThirdScreenState extends State<ThirdScreen> {
           ),
         ),
       ),
-      body: FutureBuilder<Users>(
-        future: futureUsers,
-        builder: (context, snapshot) {
+      body: FutureBuilder(
+        future: getUsers(),
+        builder: (BuildContext context, AsyncSnapshot<List<Datum>> snapshot) {
           if (snapshot.hasData) {
-            return User(
-                firstName: snapshot.data!.first_name,
-                imageUrl: snapshot.data!.avatar,
-                lastName: snapshot.data!.last_name,
-                email: snapshot.data!.email);
+            List<Datum>? users = snapshot.data;
+
+            return ListView(
+              children: users!
+                  .map((Datum userData) => ListTile(
+                        onTap: () {
+                          Navigator.pop(
+                              context,
+                              userData.firstName +
+                                  " " +
+                                  userData.lastName.toString());
+                        },
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.network(
+                            userData.avatar,
+                            width: 49,
+                            height: 49,
+                          ),
+                        ),
+                        title:
+                            Text(userData.firstName + " " + userData.lastName),
+                        subtitle: Text(userData.email),
+                      ))
+                  .toList(),
+            );
           } else if (snapshot.hasError) {
             return Text('${snapshot.error}');
           } else {
