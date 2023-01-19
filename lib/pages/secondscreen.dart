@@ -12,9 +12,10 @@ class SecondScreen extends StatefulWidget {
 
 class _SecondScreenState extends State<SecondScreen> {
   String newName = 'test';
+  dynamic _selected = 'Selected User Name';
 
   void updateInformation(String newName) {
-    setState(() => widget.name = newName);
+    setState(() => _selected = newName);
   }
 
   void moveToThirdPage() async {
@@ -81,10 +82,10 @@ class _SecondScreenState extends State<SecondScreen> {
             const SizedBox(
               height: 225,
             ),
-            const Center(
+            Center(
               child: Text(
-                'Selected User Name',
-                style: TextStyle(
+                _selected,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                   color: Color(0xff04021D),

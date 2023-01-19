@@ -23,7 +23,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
 
   Future<List<Datum>> getUsers() async {
     final response =
-        await http.get(Uri.parse('https://reqres.in/api/users?per_page=20'));
+        await http.get(Uri.parse('https://reqres.in/api/users?page=1'));
 
     if (response.statusCode == 200) {
       List<dynamic> body = (jsonDecode(response.body))['data'];
@@ -36,8 +36,31 @@ class _ThirdScreenState extends State<ThirdScreen> {
 
       return users;
     } else {
-      throw "Unable to retrieve posts.";
+      throw "Unable to retrieve users.";
     }
+  }
+
+  Future<List<Datum>> getUsers2() async {
+    final response =
+        await http.get(Uri.parse('https://reqres.in/api/users?page=2'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> body = (jsonDecode(response.body))['data'];
+
+      List<Datum> users = body
+          .map(
+            (dynamic item) => Datum.fromJson(item),
+          )
+          .toList();
+
+      return users;
+    } else {
+      throw "Unable to retrieve users.";
+    }
+  }
+
+  Future<Future<List<Datum>>> _refreshUsers(BuildContext context) async {
+    return getUsers2();
   }
 
   @override
@@ -64,44 +87,48 @@ class _ThirdScreenState extends State<ThirdScreen> {
           ),
         ),
       ),
-      body: FutureBuilder(
-        future: getUsers(),
-        builder: (BuildContext context, AsyncSnapshot<List<Datum>> snapshot) {
-          if (snapshot.hasData) {
-            List<Datum>? users = snapshot.data;
+      body: RefreshIndicator(
+        onRefresh: () => _refreshUsers(context),
+        child: FutureBuilder(
+          future: getUsers(),
+          builder: (BuildContext context, AsyncSnapshot<List<Datum>> snapshot) {
+            if (snapshot.hasData) {
+              List<Datum>? users = snapshot.data;
 
-            return ListView(
-              children: users!
-                  .map((Datum userData) => ListTile(
-                        onTap: () {
-                          Navigator.pop(
-                              context,
-                              userData.firstName +
-                                  " " +
-                                  userData.lastName.toString());
-                        },
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Image.network(
-                            userData.avatar,
-                            width: 49,
-                            height: 49,
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: users!
+                    .map((Datum userData) => ListTile(
+                          onTap: () {
+                            Navigator.pop(
+                                context,
+                                userData.firstName +
+                                    " " +
+                                    userData.lastName.toString());
+                          },
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Image.network(
+                              userData.avatar,
+                              width: 49,
+                              height: 49,
+                            ),
                           ),
-                        ),
-                        title:
-                            Text(userData.firstName + " " + userData.lastName),
-                        subtitle: Text(userData.email),
-                      ))
-                  .toList(),
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+                          title: Text(
+                              userData.firstName + " " + userData.lastName),
+                          subtitle: Text(userData.email),
+                        ))
+                    .toList(),
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
       ),
     );
   }
